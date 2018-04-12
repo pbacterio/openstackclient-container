@@ -2,30 +2,12 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/build
     docker:
-      - image: circleci/golang:1.10
+      - image: pbacterio/circleci-golang-upx
     steps:
       - checkout
       - run: go build -o openstack -ldflags="-s -w"
-      - persist_to_workspace:
-          root: ~/build
-          paths:
-            - openstack
-  compress:
-    working_directory: ~/build
-    docker:
-      - image: lalyos/upx
-    steps:
-      - attach_workspace:
-          at: ~/build
-      - run: upx ~/build/openstack
+      - run: upx --best --ultra-brute openstack
       - store_artifacts:
-          path: ~/build/openstack
-workflows:
-  version: 2
-  build_and_compress:
-    jobs:
-      - build
-      - compress
+          path: openstack
 ...
